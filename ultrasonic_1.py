@@ -1,72 +1,43 @@
 #!/usr/bin/python
-#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-#|R|a|s|p|b|e|r|r|y|P|i|-|S|p|y|.|c|o|.|u|k|
-#+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-#
-# ultrasonic_1.py
-# Measure distance using an ultrasonic module
-#
-# Ultrasonic related posts:
-# http://www.raspberrypi-spy.co.uk/tag/ultrasonic/
-#
-# Author : Matt Hawkins
-# Date   : 16/10/2016
-# -----------------------
-
-# Import required Python libraries
-from __future__ import print_function
-import time
 import RPi.GPIO as GPIO
+import time
 
-# Use BCM GPIO references
-# instead of physical pin numbers
-GPIO.setmode(GPIO.BCM)
+try:
+    GPIO.setmode(GPIO.BOARD)
 
-# Define GPIO to use on Pi
-GPIO_TRIGGER = 17
-GPIO_ECHO    = 27
+    PIN_TRIGGER = 11
+    PIN_ECHO = 13
 
-# Speed of sound in cm/s at temperature
-temperature = 20
-speedSound = 33100 + (0.6*temperature)
+    GPIO.setup(PIN_TRIGGER, GPIO.OUT)
+    GPIO.setup(PIN_ECHO, GPIO.IN)
 
-print("Ultrasonic Measurement")
-print("Speed of sound is",speedSound/100,"m/s at ",temperature,"deg")
+    GPIO.output(PIN_TRIGGER, GPIO.LOW)
 
-# Set pins as output and input
-GPIO.setup(GPIO_TRIGGER,GPIO.OUT)  # Trigger
-GPIO.setup(GPIO_ECHO,GPIO.IN)      # Echo
+    print ("Waiting for sensor to settle")
 
-# Set trigger to False (Low)
-GPIO.output(GPIO_TRIGGER, False)
+    time.sleep(2)
 
-# Allow module to settle
-time.sleep(0.5)
+    print("Calculating distance")
 
-# Send 10us pulse to trigger
-GPIO.output(GPIO_TRIGGER, True)
-# Wait 10us
-time.sleep(0.00001)
-GPIO.output(GPIO_TRIGGER, False)
-start = time.time()
+      
+    #for x in range(0,10):
+    while(True):
+      GPIO.output(PIN_TRIGGER, GPIO.HIGH)
 
-while GPIO.input(GPIO_ECHO)==0:
-  start = time.time()
+      time.sleep(0.00001)
 
-while GPIO.input(GPIO_ECHO)==1:
-  stop = time.time()
+      GPIO.output(PIN_TRIGGER, GPIO.LOW)
 
-# Calculate pulse length
-elapsed = stop-start
+      while GPIO.input(PIN_ECHO)==0:
+        pulse_start_time = time.time()
+      
+      while GPIO.input(PIN_ECHO)==1:
+        pulse_end_time = time.time()        
+      
 
-# Distance pulse travelled in that time is time
-# multiplied by the speed of sound (cm/s)
-distance = elapsed * speedSound
-
-# That was the distance there and back so halve the value
-distance = distance / 2
-
-print("Distance : {0:5.1f}".format(distance))
-
-# Reset GPIO settings
-GPIO.cleanup()
+      pulse_duration = pulse_end_time - pulse_start_time
+      distance = round(pulse_duration * 17000, 2)
+      print("Distance:",distance,"cm")
+      time.sleep(3)
+finally:
+      GPIO.cleanup()
