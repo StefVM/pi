@@ -33,8 +33,6 @@ font = ImageFont.load_default()
 image = Image.new('1', (display.width, display.height))
 draw = ImageDraw.Draw(image)
 
-draw.rectangle((0, 0, display.width, display.height), outline=255, fill=255)
-
 def readadc(adcnum):
     if ((adcnum > 7) or (adcnum < 0)):
         return -1
@@ -48,7 +46,7 @@ def readadc(adcnum):
 PIN_TRIGGER = 11
 PIN_ECHO = 13
 
-ControlPin = [18, 22, 24, 26]
+ControlPin = [31, 36, 22, 37]
 
 for pin in ControlPin:
     GPIO.setup(pin, GPIO.OUT)
@@ -78,11 +76,19 @@ print("Calculating distance")
 GPIO.setup(15, GPIO.IN)
 GPIO.setup(29, GPIO.IN)
 
+distance = 0
+trigger_distance = 0
 status = "armed"
-
 triggercount = 0
 
 while True:
+    draw.rectangle((0, 0, display.width, display.height), outline=255, fill=255)
+
+    draw.text((1,0), 'Distance: ' + str(distance), font=font)
+    draw.text((1,0), 'Trigger distance: ' + str(trigger_distance), font=font)
+    draw.text((1,0), 'Status:  ' + status, font=font)
+    draw.text((1,0), 'Triggers:  ' + str(triggercount), font=font)
+
     tmp = readadc(0)
     print("input: ", tmp)
     time.sleep(0.2)
@@ -139,7 +145,3 @@ while True:
 
     time.sleep(3)
 
-    draw.text((1,0), 'Distance: ', distance, font=font)
-    draw.text((1,0), 'Trigger distance: ', trigger_distance, font=font)
-    draw.text((1,0), 'Status:  ', status, font=font)
-    draw.text((1,0), 'Triggers:  ', triggercount, font=font)
