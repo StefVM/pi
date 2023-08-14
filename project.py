@@ -52,15 +52,15 @@ try:
         GPIO.setup(pin, GPIO.OUT)
         GPIO.output(pin, 0)
 
-    seq = [[1, 1, 0, 0],
-           [0, 1, 1, 0],
+    seq = [[1, 0, 0, 1],
            [0, 0, 1, 1],
-           [1, 0, 0, 1]]
+           [0, 1, 1, 0],
+           [1, 1, 0, 0]]
 
-    reverseseq = [[1, 0, 0, 1],
-                  [0, 0, 1, 1],
+    reverseseq = [[1, 1, 0, 0],
                   [0, 1, 1, 0],
-                  [1, 1, 0, 0]]
+                  [0, 0, 1, 1],
+                  [1, 0, 0, 1]]
 
     status = "on"
     statusvalue = 2
@@ -99,14 +99,14 @@ try:
 
         pulse_duration = pulse_end_time - pulse_start_time
         distance = round(pulse_duration * 17000, 2)
-        trigger_distance = round(2 + tmp / 100, 2)
+        trigger_distance = round(5 + tmp / 50, 2)
         if status == "on":
             if (distance < trigger_distance):
-                for i in range(0, 500):
+                for i in range(0, 100):
                     for fullstep in range(4):
                         for pin in range(4):
                             GPIO.output(ControlPin[pin], seq[fullstep][pin])
-                            time.sleep(0.001)
+                            time.sleep(0.0005)
                             GPIO.cleanup
                 triggercount += 1
                 status = "triggered"
@@ -114,11 +114,11 @@ try:
 
         if status == "on":
             if (GPIO.input(22) == 0):
-                for i in range(0, 500):
+                for i in range(0, 100):
                     for fullstep in range(4):
                         for pin in range(4):
                             GPIO.output(ControlPin[pin], seq[fullstep][pin])
-                            time.sleep(0.001)
+                            time.sleep(0.0005)
                             GPIO.cleanup
                 triggercount += 1
                 status = "triggered"
@@ -127,11 +127,11 @@ try:
 
         if status == "triggered":
             if (GPIO.input(5) == 0):
-                for i in range(0, 500):
+                for i in range(0, 100):
                     for fullstep in range(4):
                         for pin in range(4):
                             GPIO.output(ControlPin[pin], reverseseq[fullstep][pin])
-                            time.sleep(0.001)
+                            time.sleep(0.0005)
                             GPIO.cleanup
                 status = "off"
                 statusvalue = 0

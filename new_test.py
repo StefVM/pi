@@ -14,11 +14,11 @@ seq = [[1, 0, 0, 1],
        [0, 1, 1, 0],
        [1, 1, 0, 0]]
 
-for i in range(0, 500):
+for i in range(0, 100):
     for fullstep in range(4):
         for pin in range(4):
             GPIO.output(ControlPin[pin], seq[fullstep] [pin])
-            time.sleep(0.001)
+            time.sleep(0.0005)
 
 #def blink(pin):
 #    GPIO.setup(pin, GPIO.OUT)
